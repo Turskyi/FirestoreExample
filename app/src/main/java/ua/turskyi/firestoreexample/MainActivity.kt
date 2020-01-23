@@ -8,7 +8,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -33,6 +36,30 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         editTextTitle = findViewById(R.id.edit_text_title)
         editTextDescription = findViewById(R.id.edit_text_description)
         textViewData = findViewById(R.id.text_view_data)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        noteRef.addSnapshotListener(this, object : EventListener<DocumentSnapshot?> {
+
+            override fun onEvent(
+                documentSnapshot: DocumentSnapshot?,
+                e: FirebaseFirestoreException?
+            ) {
+                if (e != null) {
+                    Toast.makeText(this@MainActivity, "Error while loading!", Toast.LENGTH_SHORT)
+                        .show()
+                    Log.d(TAG, e.toString())
+                    return
+                }
+                if (documentSnapshot?.exists()!!) {
+                    val title = documentSnapshot.getString(KEY_TITLE)
+                    val description = documentSnapshot.getString(KEY_DESCRIPTION)
+                    textViewData!!.text =
+                        getString(R.string.title_and_description, title, description)
+                }
+            }
+        })
     }
 
     fun saveNote(v: View?) {
