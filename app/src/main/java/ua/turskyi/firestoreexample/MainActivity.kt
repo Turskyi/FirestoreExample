@@ -1,14 +1,15 @@
 package ua.turskyi.firestoreexample
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private var textViewData: TextView? = null
 
     private val db = FirebaseFirestore.getInstance()
+    private val notebookRef = db.collection("Notebook")
     private val noteRef =
         db.document("Notebook/My First Note")
 
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onStart() {
         super.onStart()
-        noteRef.addSnapshotListener(this, object : EventListener<DocumentSnapshot?> {
+/*        noteRef.addSnapshotListener(this, object : EventListener<DocumentSnapshot?> {
 
             override fun onEvent(
                 documentSnapshot: DocumentSnapshot?,
@@ -53,7 +55,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //                    val title = documentSnapshot.getString(KEY_TITLE)
 //                    val description = documentSnapshot.getString(KEY_DESCRIPTION)
 
-                    /* working with object */
+                    *//* working with object *//*
                     val note = documentSnapshot.toObject(Note::class.java)
                     val title = note?.title
                     val description = note?.description
@@ -64,10 +66,47 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     textViewData?.text = ""
                 }
             }
-        })
+        })*/
+
+        notebookRef.addSnapshotListener(
+            this,
+            object : EventListener<QuerySnapshot> {
+               override fun onEvent(
+                    queryDocumentSnapshots: QuerySnapshot?,
+                    e: FirebaseFirestoreException?
+                ) {
+                    if (e != null) {
+                        return
+                    }
+                    var data = ""
+                   if (queryDocumentSnapshots != null) {
+                       for (documentSnapshot in queryDocumentSnapshots) {
+                           val note =
+                               documentSnapshot.toObject(
+                                   Note::class.java
+                               )
+                           note.documentId = documentSnapshot.id
+                           val documentId = note.documentId
+                           val title = note.title
+                           val description = note.description
+                           data += ("ID: " + documentId
+                                   + "\nTitle: " + title + "\nDescription: " + description + "\n\n")
+                       }
+                   }
+                    textViewData!!.text = data
+                }
+            })
     }
 
-    fun saveNote(v: View?) {
+    fun addNote(v: View?) {
+        val title = editTextTitle!!.text.toString()
+        val description = editTextDescription!!.text.toString()
+        val note =
+            Note(title, description)
+        notebookRef.add(note)
+    }
+
+/*    fun saveNote(v: View?) {
         val title = editTextTitle!!.text.toString()
         val description = editTextDescription!!.text.toString()
 
@@ -75,13 +114,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //        note[KEY_TITLE] = title
 //        note[KEY_DESCRIPTION] = description
 
-        /* nicer way than above */
+        *//* nicer way than above *//*
 //        val note = hashMapOf(
 //            KEY_TITLE to title,
 //            KEY_DESCRIPTION to description
 //        )
 
-        /* working with object */
+        *//* working with object *//*
         val note =
             Note(title, description)
 
@@ -98,17 +137,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 Toast.makeText(this@MainActivity, "Error!", Toast.LENGTH_SHORT).show()
                 Log.d(TAG, e.toString())
             }
-    }
+    }*/
 
-    fun updateDescription(v: View?) {
+/*    fun updateDescription(v: View?) {
         val description = editTextDescription!!.text.toString()
 
-        /* creates a new note if it does not exist */
+        *//* creates a new note if it does not exist *//*
 //        val note: MutableMap<String, Any> = HashMap()
 //        note[KEY_DESCRIPTION] = description
 //        noteRef.set(note, SetOptions.merge())
 
-        /* does not create a new note if it does not exist */
+        *//* does not create a new note if it does not exist *//*
         noteRef.update(KEY_DESCRIPTION, description)
     }
 
@@ -117,16 +156,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //        note[KEY_DESCRIPTION] = FieldValue.delete()
 //        noteRef.update(note)
 
-        /* the same as above */
+        *//* the same as above *//*
         noteRef.update(KEY_DESCRIPTION, FieldValue.delete())
     }
 
     fun deleteNote(v: View?) {
         noteRef.delete()
-    }
+    }*/
 
 
-    fun loadNote(v: View?) {
+/*    fun loadNote(v: View?) {
         noteRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
@@ -138,7 +177,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         //                        documentSnapshot.data as MutableMap<String, Any>
 
 
-                    /* working with object */
+                    *//* working with object *//*
                     val note = documentSnapshot.toObject(Note::class.java)
                     val title = note?.title
                     val description = note?.description
@@ -155,6 +194,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             .addOnFailureListener { e ->
                 Toast.makeText(this@MainActivity, "Error!", Toast.LENGTH_SHORT).show()
                 Log.d(TAG, e.toString())
+            }
+    }*/
+
+    fun loadNotes(v: View?) {
+        notebookRef.get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                var data = ""
+                for (documentSnapshot in queryDocumentSnapshots) {
+                    val note =
+                        documentSnapshot.toObject(
+                            Note::class.java
+                        )
+                    note.documentId = documentSnapshot.id
+                    val documentId = note.documentId
+                    val title = note.title
+                    val description = note.description
+                    data += ("ID: " + documentId
+                            + "\nTitle: " + title + "\nDescription: " + description + "\n\n")
+                }
+                textViewData!!.text = data
             }
     }
 }

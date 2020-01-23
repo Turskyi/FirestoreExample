@@ -1,6 +1,11 @@
 package ua.turskyi.firestoreexample
 
+import com.google.firebase.firestore.Exclude
+
+
 class Note {
+    @get:Exclude
+    var documentId: String? = null
     var title: String? = null
         private set
     var description: String? = null
@@ -13,4 +18,5 @@ class Note {
         this.title = title
         this.description = description
     }
+
 }
