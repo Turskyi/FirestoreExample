@@ -50,8 +50,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     return
                 }
                 if (documentSnapshot?.exists()!!) {
-                    val title = documentSnapshot.getString(KEY_TITLE)
-                    val description = documentSnapshot.getString(KEY_DESCRIPTION)
+//                    val title = documentSnapshot.getString(KEY_TITLE)
+//                    val description = documentSnapshot.getString(KEY_DESCRIPTION)
+
+                    /* working with object */
+                    val note = documentSnapshot.toObject(Note::class.java)
+                    val title = note?.title
+                    val description = note?.description
+
                     textViewData!!.text =
                         getString(R.string.title_and_description, title, description)
                 } else {
@@ -70,10 +76,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //        note[KEY_DESCRIPTION] = description
 
         /* nicer way than above */
-        val note = hashMapOf(
-            KEY_TITLE to title,
-            KEY_DESCRIPTION to description
-        )
+//        val note = hashMapOf(
+//            KEY_TITLE to title,
+//            KEY_DESCRIPTION to description
+//        )
+
+        /* working with object */
+        val note =
+            Note(title, description)
 
 //        db.collection("Notebook").document("My First Note").set(note)
         noteRef.set(note)
@@ -120,12 +130,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         noteRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    val title = documentSnapshot.getString(KEY_TITLE)
-                    val description =
-                        documentSnapshot.getString(KEY_DESCRIPTION)
+//                    val title = documentSnapshot.getString(KEY_TITLE)
+//                    val description =
+//                        documentSnapshot.getString(KEY_DESCRIPTION)
 
         //                    val note: MutableMap<String, Any> =
         //                        documentSnapshot.data as MutableMap<String, Any>
+
+
+                    /* working with object */
+                    val note = documentSnapshot.toObject(Note::class.java)
+                    val title = note?.title
+                    val description = note?.description
 
                     textViewData?.text = getString(R.string.title_and_description, title, description)
                 } else {
