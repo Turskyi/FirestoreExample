@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "900235961717",
+    "firebase_url": "https://firestoreexample-b1805.firebaseio.com",
+    "project_id": "firestoreexample-b1805",
+    "storage_bucket": "firestoreexample-b1805.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900235961717:android:c8daf257b977a5063a1f3c",
+        "android_client_info": {
+          "package_name": "ua.turskyi.firestoreexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900235961717-4uk55g9cfdiu42suqdmo184oagrublef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.turskyi.firestoreexample",
+            "certificate_hash": "3036d938c1dc9492cd887a781ce1b0a3bc3e7655"
+          }
+        },
+        {
+          "client_id": "900235961717-uv5ngvt1i1dq7qmufj8k48804c1jftgj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdPqMaAVsAlCMoyrz3-sqBhE_lc8IEBNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900235961717-uv5ngvt1i1dq7qmufj8k48804c1jftgj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
