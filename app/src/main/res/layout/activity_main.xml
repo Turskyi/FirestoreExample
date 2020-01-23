@@ -31,4 +31,16 @@
         android:onClick="saveNote"
         android:text="@string/save" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="loadNote"
+        android:text="@string/load" />
+
+    <TextView
+        android:id="@+id/text_view_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" />
+
 </LinearLayout>

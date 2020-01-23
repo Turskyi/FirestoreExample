@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,13 +20,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private var editTextTitle: EditText? = null
     private var editTextDescription: EditText? = null
+    private var textViewData: TextView? = null
+
     private val db = FirebaseFirestore.getInstance()
+    private val noteRef =
+        db.document("Notebook/My First Note")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
 
         editTextTitle = findViewById(R.id.edit_text_title)
         editTextDescription = findViewById(R.id.edit_text_description)
+        textViewData = findViewById(R.id.text_view_data)
     }
 
     fun saveNote(v: View?) {
@@ -42,13 +49,40 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             KEY_DESCRIPTION to description
         )
 
-        db.collection("Notebook").document("My First Note").set(note)
+//        db.collection("Notebook").document("My First Note").set(note)
+        noteRef.set(note)
             .addOnSuccessListener {
                 Toast.makeText(
                     this@MainActivity,
                     "Note saved",
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this@MainActivity, "Error!", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, e.toString())
+            }
+    }
+
+    fun loadNote(v: View?) {
+        noteRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val title = documentSnapshot.getString(KEY_TITLE)
+                    val description =
+                        documentSnapshot.getString(KEY_DESCRIPTION)
+
+        //                    val note: MutableMap<String, Any> =
+        //                        documentSnapshot.data as MutableMap<String, Any>
+
+                    textViewData?.text = getString(R.string.title_and_description, title, description)
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Document does not exist",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this@MainActivity, "Error!", Toast.LENGTH_SHORT).show()
