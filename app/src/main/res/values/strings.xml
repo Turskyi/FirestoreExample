@@ -6,4 +6,6 @@
     <string name="load">Load</string>
     <string name="title_and_description">Title: %1$s \n Description: %2$s</string>
     <string name="update_description">Update description</string>
+    <string name="delete_description">Delete description</string>
+    <string name="delete_note">Delete note</string>
 </resources>

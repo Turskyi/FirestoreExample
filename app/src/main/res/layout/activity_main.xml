@@ -43,6 +43,18 @@
         android:onClick="updateDescription"
         android:text="@string/update_description" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="deleteDescription"
+        android:text="@string/delete_description" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="deleteNote"
+        android:text="@string/delete_note" />
+
     <TextView
         android:id="@+id/text_view_data"
         android:layout_width="wrap_content"

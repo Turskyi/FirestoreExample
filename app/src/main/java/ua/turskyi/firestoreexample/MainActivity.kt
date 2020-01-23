@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     val description = documentSnapshot.getString(KEY_DESCRIPTION)
                     textViewData!!.text =
                         getString(R.string.title_and_description, title, description)
+                } else {
+                    textViewData?.text = ""
                 }
             }
         })
@@ -98,6 +100,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         /* does not create a new note if it does not exist */
         noteRef.update(KEY_DESCRIPTION, description)
+    }
+
+    fun deleteDescription(v: View?) {
+//        val note: MutableMap<String, Any> = HashMap()
+//        note[KEY_DESCRIPTION] = FieldValue.delete()
+//        noteRef.update(note)
+
+        /* the same as above */
+        noteRef.update(KEY_DESCRIPTION, FieldValue.delete())
+    }
+
+    fun deleteNote(v: View?) {
+        noteRef.delete()
     }
 
 
