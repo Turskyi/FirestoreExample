@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         editTextDescription = findViewById(R.id.edit_text_description)
         editTextPriority = findViewById(R.id.edit_text_priority)
         textViewData = findViewById(R.id.text_view_data)
+
+        executeBatchedWrite()
     }
 
     override fun onStart() {
@@ -115,5 +117,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     lastResult = queryDocumentSnapshots.documents[queryDocumentSnapshots.size() - 1]
                 }
             }
+    }
+
+    private fun executeBatchedWrite() {
+        val batch = db.batch()
+        val doc1 = notebookRef.document("New Note")
+        batch[doc1] = Note("New Note", "New Note", 1)
+        val doc2 =
+            notebookRef.document("AsSqoQH9kXg69RaTrbIk")
+        batch.update(doc2, "title", "Updated Note")
+        val doc3 =
+            notebookRef.document("hWOBxRCjJhDYfzfVZkn5")
+        batch.delete(doc3)
+        val doc4 = notebookRef.document()
+        batch[doc4] = Note("Added Note", "Added Note", 1)
+        batch.commit().addOnFailureListener { e -> textViewData!!.text = e.toString() }
     }
 }
