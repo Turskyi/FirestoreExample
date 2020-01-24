@@ -1,12 +1,13 @@
 package ua.turskyi.firestoreexample
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -290,12 +291,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }*/
 
     fun loadNotes(v: View?) {
-        notebookRef.whereGreaterThanOrEqualTo("priority", 2)
+        val task1: Task<*> = notebookRef.whereLessThan("priority", 2)
             .orderBy("priority")
-            .orderBy("title")
             .get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
-                var data = ""
+        val task2: Task<*> =
+            notebookRef.whereGreaterThan("priority", 2)
+                .orderBy("priority")
+                .get()
+        val allTasks =
+            Tasks.whenAllSuccess<QuerySnapshot>(task1, task2)
+        allTasks.addOnSuccessListener { querySnapshots ->
+            var data = ""
+            for (queryDocumentSnapshots in querySnapshots) {
                 for (documentSnapshot in queryDocumentSnapshots) {
                     val note =
                         documentSnapshot.toObject(
@@ -310,8 +317,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             + "\nTitle: " + title + "\nDescription: " + description
                             + "\nPriority: " + priority + "\n\n")
                 }
-                textViewData!!.text = data
             }
-            .addOnFailureListener { e -> Log.d(TAG, e.toString()) }
+            textViewData!!.text = data
+        }
     }
 }
