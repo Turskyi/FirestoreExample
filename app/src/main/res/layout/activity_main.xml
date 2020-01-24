@@ -49,11 +49,11 @@
         android:onClick="addNote"
         android:text="@string/add" />
 
-    <Button
+<!--    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="loadNotes"
-        android:text="@string/load" />
+        android:text="@string/load" />-->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

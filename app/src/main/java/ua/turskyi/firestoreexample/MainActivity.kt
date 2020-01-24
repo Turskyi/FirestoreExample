@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         editTextPriority = findViewById(R.id.edit_text_priority)
         editTextTags = findViewById(R.id.edit_text_tags)
         textViewData = findViewById(R.id.text_view_data)
-        updateNestedValue()
+        /*updateNestedValue()*/
     }
 
     fun addNote(v: View?) {
@@ -43,10 +43,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         val note =
             Note(title, description, priority, tags)
-        notebookRef.add(note)
+        notebookRef.document("Um0UGNdiB2dA9JIr3eTP")
+            .collection("Child Notes").add(note)
     }
 
-    fun loadNotes(v: View?) {
+/*    fun loadNotes(v: View?) {
         notebookRef.whereEqualTo("tags.tag1", true).get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 var data = ""
@@ -65,10 +66,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
                 textViewData!!.text = data
             }
-    }
+    }*/
 
-    private fun updateNestedValue() {
+/*    private fun updateNestedValue() {
         notebookRef.document("kPj6ZqQ4v85WvLAvXCT5")
             .update("tags.tag1.nested1.nested2", true)
-    }
+    }*/
 }
