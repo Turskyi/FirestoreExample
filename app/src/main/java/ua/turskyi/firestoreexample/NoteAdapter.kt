@@ -7,9 +7,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.DocumentSnapshot
 
 class NoteAdapter(options: FirestoreRecyclerOptions<Note?>) :
     FirestoreRecyclerAdapter<Note, NoteAdapter.NoteHolder>(options) {
+    private var listener: OnItemClickListener? = null
     override fun onBindViewHolder(
         holder: NoteHolder,
         position: Int,
@@ -35,11 +37,27 @@ class NoteAdapter(options: FirestoreRecyclerOptions<Note?>) :
         snapshots.getSnapshot(position).reference.delete()
     }
 
-    inner class NoteHolder(itemView: View) :
+   inner class NoteHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         var textViewTitle: TextView = itemView.findViewById(R.id.text_view_title)
         var textViewDescription: TextView = itemView.findViewById(R.id.text_view_description)
         var textViewPriority: TextView = itemView.findViewById(R.id.text_view_priority)
 
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener!!.onItemClick(snapshots.getSnapshot(position), position)
+                }
+            }
+        }
+    }
+
+    interface OnItemClickListener {
+       fun onItemClick(documentSnapshot: DocumentSnapshot?, position: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.listener = listener
     }
 }
