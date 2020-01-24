@@ -6,10 +6,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -21,6 +18,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private var editTextTitle: EditText? = null
     private var editTextDescription: EditText? = null
+    private var editTextPriority: EditText? = null
     private var textViewData: TextView? = null
 
     private val db = FirebaseFirestore.getInstance()
@@ -34,12 +32,45 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         editTextTitle = findViewById(R.id.edit_text_title)
         editTextDescription = findViewById(R.id.edit_text_description)
+        editTextPriority = findViewById(R.id.edit_text_priority)
         textViewData = findViewById(R.id.text_view_data)
     }
 
     override fun onStart() {
         super.onStart()
-/*        noteRef.addSnapshotListener(this, object : EventListener<DocumentSnapshot?> {
+        notebookRef.addSnapshotListener(this, object : EventListener<QuerySnapshot?> {
+           override fun onEvent(
+                queryDocumentSnapshots: QuerySnapshot?,
+                e: FirebaseFirestoreException?
+            ) {
+                if (e != null) {
+                    return
+                }
+                var data = ""
+               queryDocumentSnapshots?.let {
+                   for (documentSnapshot in queryDocumentSnapshots) {
+                       val note =
+                           documentSnapshot.toObject(
+                               Note::class.java
+                           )
+                       note.documentId = documentSnapshot.id
+                       val documentId = note.documentId
+                       val title = note.title
+                       val description = note.description
+                       val priority = note.priority
+                       data += ("ID: " + documentId
+                               + "\nTitle: " + title + "\nDescription: " + description
+                               + "\nPriority: " + priority + "\n\n")
+                   }
+               }
+                textViewData!!.text = data
+            }
+        })
+    }
+
+/*    override fun onStart() {
+        super.onStart()
+*//*        noteRef.addSnapshotListener(this, object : EventListener<DocumentSnapshot?> {
 
             override fun onEvent(
                 documentSnapshot: DocumentSnapshot?,
@@ -55,7 +86,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //                    val title = documentSnapshot.getString(KEY_TITLE)
 //                    val description = documentSnapshot.getString(KEY_DESCRIPTION)
 
-                    *//* working with object *//*
+                    *//**//* working with object *//**//*
                     val note = documentSnapshot.toObject(Note::class.java)
                     val title = note?.title
                     val description = note?.description
@@ -66,7 +97,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     textViewData?.text = ""
                 }
             }
-        })*/
+        })*//*
 
         notebookRef.addSnapshotListener(
             this,
@@ -79,7 +110,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                         return
                     }
                     var data = ""
-                   if (queryDocumentSnapshots != null) {
+                   queryDocumentSnapshots?.let {
                        for (documentSnapshot in queryDocumentSnapshots) {
                            val note =
                                documentSnapshot.toObject(
@@ -96,15 +127,27 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     textViewData!!.text = data
                 }
             })
-    }
+    }*/
 
     fun addNote(v: View?) {
+        val title = editTextTitle!!.text.toString()
+        val description = editTextDescription!!.text.toString()
+        if (editTextPriority!!.length() == 0) {
+            editTextPriority!!.setText("0")
+        }
+        val priority = editTextPriority!!.text.toString().toInt()
+        val note =
+            Note(title, description, priority)
+        notebookRef.add(note)
+    }
+
+/*    fun addNote(v: View?) {
         val title = editTextTitle!!.text.toString()
         val description = editTextDescription!!.text.toString()
         val note =
             Note(title, description)
         notebookRef.add(note)
-    }
+    }*/
 
 /*    fun saveNote(v: View?) {
         val title = editTextTitle!!.text.toString()
@@ -197,7 +240,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
     }*/
 
-    fun loadNotes(v: View?) {
+/*    fun loadNotes(v: View?) {
         notebookRef.get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 var data = ""
@@ -212,6 +255,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     val description = note.description
                     data += ("ID: " + documentId
                             + "\nTitle: " + title + "\nDescription: " + description + "\n\n")
+                }
+                textViewData!!.text = data
+            }
+    }*/
+
+    fun loadNotes(v: View?) {
+        notebookRef.whereGreaterThanOrEqualTo("priority", 2)
+            .orderBy("priority", Query.Direction.DESCENDING)
+            .limit(3)
+            .get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                var data = ""
+                for (documentSnapshot in queryDocumentSnapshots) {
+                    val note =
+                        documentSnapshot.toObject(
+                            Note::class.java
+                        )
+                    note.documentId = documentSnapshot.id
+                    val documentId = note.documentId
+                    val title = note.title
+                    val description = note.description
+                    val priority = note.priority
+                    data += ("ID: " + documentId
+                            + "\nTitle: " + title + "\nDescription: " + description
+                            + "\nPriority: " + priority + "\n\n")
                 }
                 textViewData!!.text = data
             }

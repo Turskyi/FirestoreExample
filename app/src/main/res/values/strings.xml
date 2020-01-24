@@ -9,4 +9,5 @@
     <string name="delete_description">Delete description</string>
     <string name="delete_note">Delete note</string>
     <string name="add">Add</string>
+    <string name="priority">Priority</string>
 </resources>
