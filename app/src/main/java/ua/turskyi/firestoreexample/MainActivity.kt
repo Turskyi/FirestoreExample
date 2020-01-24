@@ -1,12 +1,16 @@
 package ua.turskyi.firestoreexample
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -260,7 +264,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
     }*/
 
-    fun loadNotes(v: View?) {
+/*    fun loadNotes(v: View?) {
         notebookRef.whereGreaterThanOrEqualTo("priority", 2)
             .orderBy("priority", Query.Direction.DESCENDING)
             .limit(3)
@@ -283,5 +287,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
                 textViewData!!.text = data
             }
+    }*/
+
+    fun loadNotes(v: View?) {
+        notebookRef.whereGreaterThanOrEqualTo("priority", 2)
+            .orderBy("priority")
+            .orderBy("title")
+            .get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                var data = ""
+                for (documentSnapshot in queryDocumentSnapshots) {
+                    val note =
+                        documentSnapshot.toObject(
+                            Note::class.java
+                        )
+                    note.documentId = documentSnapshot.id
+                    val documentId = note.documentId
+                    val title = note.title
+                    val description = note.description
+                    val priority = note.priority
+                    data += ("ID: " + documentId
+                            + "\nTitle: " + title + "\nDescription: " + description
+                            + "\nPriority: " + priority + "\n\n")
+                }
+                textViewData!!.text = data
+            }
+            .addOnFailureListener { e -> Log.d(TAG, e.toString()) }
     }
 }
