@@ -31,6 +31,10 @@ class NoteAdapter(options: FirestoreRecyclerOptions<Note?>) :
         return NoteHolder(v)
     }
 
+    fun deleteItem(position: Int) {
+        snapshots.getSnapshot(position).reference.delete()
+    }
+
     inner class NoteHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         var textViewTitle: TextView = itemView.findViewById(R.id.text_view_title)
