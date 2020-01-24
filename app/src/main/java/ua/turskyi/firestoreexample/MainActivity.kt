@@ -1,22 +1,19 @@
 package ua.turskyi.firestoreexample
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
-/*    companion object {
+    companion object {
         private const val TAG = "MainActivity"
-        private const val KEY_TITLE = "title"
-        private const val KEY_DESCRIPTION = "description"
-    }*/
+    }
 
     private var editTextTitle: EditText? = null
     private var editTextDescription: EditText? = null
@@ -39,98 +36,40 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         textViewData = findViewById(R.id.text_view_data)
     }
 
-  /*  override fun onStart() {
+    override fun onStart() {
         super.onStart()
         notebookRef.addSnapshotListener(this, object : EventListener<QuerySnapshot?> {
            override fun onEvent(
                 queryDocumentSnapshots: QuerySnapshot?,
                 e: FirebaseFirestoreException?
             ) {
-                if (e != null) {
+                e?.let{
+                    Log.d(TAG,e.toString())
                     return
                 }
-                var data = ""
-               queryDocumentSnapshots?.let {
-                   for (documentSnapshot in queryDocumentSnapshots) {
-                       val note =
-                           documentSnapshot.toObject(
-                               Note::class.java
-                           )
-                       note.documentId = documentSnapshot.id
-                       val documentId = note.documentId
-                       val title = note.title
-                       val description = note.description
-                       val priority = note.priority
-                       data += ("ID: " + documentId
-                               + "\nTitle: " + title + "\nDescription: " + description
-                               + "\nPriority: " + priority + "\n\n")
-                   }
-               }
-                textViewData!!.text = data
+                for (dc in queryDocumentSnapshots?.documentChanges!!) {
+                    val documentSnapshot: DocumentSnapshot = dc.document
+                    val id = documentSnapshot.id
+                    val oldIndex = dc.oldIndex
+                    val newIndex = dc.newIndex
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED -> textViewData!!.append(
+                            "\nAdded: " + id +
+                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex
+                        )
+                        DocumentChange.Type.MODIFIED -> textViewData!!.append(
+                            "\nModified: " + id +
+                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex
+                        )
+                        DocumentChange.Type.REMOVED -> textViewData!!.append(
+                            "\nRemoved: " + id +
+                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex
+                        )
+                    }
+                }
             }
         })
-    }*/
-
-/*    override fun onStart() {
-        super.onStart()
-*//*        noteRef.addSnapshotListener(this, object : EventListener<DocumentSnapshot?> {
-
-            override fun onEvent(
-                documentSnapshot: DocumentSnapshot?,
-                e: FirebaseFirestoreException?
-            ) {
-                if (e != null) {
-                    Toast.makeText(this@MainActivity, "Error while loading!", Toast.LENGTH_SHORT)
-                        .show()
-                    Log.d(TAG, e.toString())
-                    return
-                }
-                if (documentSnapshot?.exists()!!) {
-//                    val title = documentSnapshot.getString(KEY_TITLE)
-//                    val description = documentSnapshot.getString(KEY_DESCRIPTION)
-
-                    *//**//* working with object *//**//*
-                    val note = documentSnapshot.toObject(Note::class.java)
-                    val title = note?.title
-                    val description = note?.description
-
-                    textViewData!!.text =
-                        getString(R.string.title_and_description, title, description)
-                } else {
-                    textViewData?.text = ""
-                }
-            }
-        })*//*
-
-        notebookRef.addSnapshotListener(
-            this,
-            object : EventListener<QuerySnapshot> {
-               override fun onEvent(
-                    queryDocumentSnapshots: QuerySnapshot?,
-                    e: FirebaseFirestoreException?
-                ) {
-                    if (e != null) {
-                        return
-                    }
-                    var data = ""
-                   queryDocumentSnapshots?.let {
-                       for (documentSnapshot in queryDocumentSnapshots) {
-                           val note =
-                               documentSnapshot.toObject(
-                                   Note::class.java
-                               )
-                           note.documentId = documentSnapshot.id
-                           val documentId = note.documentId
-                           val title = note.title
-                           val description = note.description
-                           data += ("ID: " + documentId
-                                   + "\nTitle: " + title + "\nDescription: " + description + "\n\n")
-                       }
-                   }
-                    textViewData!!.text = data
-                }
-            })
-    }*/
+    }
 
     fun addNote(v: View?) {
         val title = editTextTitle!!.text.toString()
