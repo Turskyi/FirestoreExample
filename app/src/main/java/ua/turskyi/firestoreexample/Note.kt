@@ -10,13 +10,22 @@ class Note {
     var description: String? = null
         private set
     var priority = 0
+        private set
+    var tags: Map<String, Boolean>? = null
 
     constructor() { //public no-arg constructor needed
     }
 
-    constructor(title: String?, description: String?, priority: Int) {
+    constructor(
+        title: String?,
+        description: String?,
+        priority: Int,
+        tags: Map<String, Boolean>?
+    ) {
         this.title = title
         this.description = description
         this.priority = priority
+        this.tags = tags
     }
+
 }

@@ -1,31 +1,21 @@
 package ua.turskyi.firestoreexample
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
-
-    companion object {
-        private const val TAG = "MainActivity"
-    }
-
     private var editTextTitle: EditText? = null
     private var editTextDescription: EditText? = null
     private var editTextPriority: EditText? = null
+    private var editTextTags: EditText? = null
     private var textViewData: TextView? = null
-
     private val db = FirebaseFirestore.getInstance()
     private val notebookRef = db.collection("Notebook")
-/*    private val noteRef = db.document("Notebook/My First Note")*/
-
-    private var lastResult: DocumentSnapshot? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
@@ -33,44 +23,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         editTextTitle = findViewById(R.id.edit_text_title)
         editTextDescription = findViewById(R.id.edit_text_description)
         editTextPriority = findViewById(R.id.edit_text_priority)
+        editTextTags = findViewById(R.id.edit_text_tags)
         textViewData = findViewById(R.id.text_view_data)
-
-        executeBatchedWrite()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        notebookRef.addSnapshotListener(this, object : EventListener<QuerySnapshot?> {
-           override fun onEvent(
-                queryDocumentSnapshots: QuerySnapshot?,
-                e: FirebaseFirestoreException?
-            ) {
-                e?.let{
-                    Log.d(TAG,e.toString())
-                    return
-                }
-                for (dc in queryDocumentSnapshots?.documentChanges!!) {
-                    val documentSnapshot: DocumentSnapshot = dc.document
-                    val id = documentSnapshot.id
-                    val oldIndex = dc.oldIndex
-                    val newIndex = dc.newIndex
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED -> textViewData!!.append(
-                            "\nAdded: " + id +
-                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex
-                        )
-                        DocumentChange.Type.MODIFIED -> textViewData!!.append(
-                            "\nModified: " + id +
-                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex
-                        )
-                        DocumentChange.Type.REMOVED -> textViewData!!.append(
-                            "\nRemoved: " + id +
-                                    "\nOld Index: " + oldIndex + "New Index: " + newIndex
-                        )
-                    }
-                }
-            }
-        })
+        updateNestedValue()
     }
 
     fun addNote(v: View?) {
@@ -80,21 +35,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             editTextPriority!!.setText("0")
         }
         val priority = editTextPriority!!.text.toString().toInt()
+        val tagInput = editTextTags!!.text.toString()
+        val tagArray = tagInput.split("\\s*,\\s*").toTypedArray()
+        val tags: MutableMap<String, Boolean> = HashMap()
+        for (tag in tagArray) {
+            tags[tag] = true
+        }
         val note =
-            Note(title, description, priority)
+            Note(title, description, priority, tags)
         notebookRef.add(note)
     }
 
     fun loadNotes(v: View?) {
-        val query: Query = if (lastResult == null) {
-            notebookRef.orderBy("priority")
-                .limit(3)
-        } else {
-            notebookRef.orderBy("priority")
-                .startAfter(lastResult!!)
-                .limit(3)
-        }
-        query.get()
+        notebookRef.whereEqualTo("tags.tag1", true).get()
             .addOnSuccessListener { queryDocumentSnapshots ->
                 var data = ""
                 for (documentSnapshot in queryDocumentSnapshots) {
@@ -104,33 +57,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                         )
                     note.documentId = documentSnapshot.id
                     val documentId = note.documentId
-                    val title = note.title
-                    val description = note.description
-                    val priority = note.priority
-                    data += ("ID: " + documentId
-                            + "\nTitle: " + title + "\nDescription: " + description
-                            + "\nPriority: " + priority + "\n\n")
+                    data += "ID: $documentId"
+                    for (tag in note.tags!!.keys) {
+                        data += "\n-$tag"
+                    }
+                    data += "\n\n"
                 }
-                if (queryDocumentSnapshots.size() > 0) {
-                    data += "___________\n\n"
-                    textViewData!!.append(data)
-                    lastResult = queryDocumentSnapshots.documents[queryDocumentSnapshots.size() - 1]
-                }
+                textViewData!!.text = data
             }
     }
 
-    private fun executeBatchedWrite() {
-        val batch = db.batch()
-        val doc1 = notebookRef.document("New Note")
-        batch[doc1] = Note("New Note", "New Note", 1)
-        val doc2 =
-            notebookRef.document("AsSqoQH9kXg69RaTrbIk")
-        batch.update(doc2, "title", "Updated Note")
-        val doc3 =
-            notebookRef.document("hWOBxRCjJhDYfzfVZkn5")
-        batch.delete(doc3)
-        val doc4 = notebookRef.document()
-        batch[doc4] = Note("Added Note", "Added Note", 1)
-        batch.commit().addOnFailureListener { e -> textViewData!!.text = e.toString() }
+    private fun updateNestedValue() {
+        notebookRef.document("kPj6ZqQ4v85WvLAvXCT5")
+            .update("tags.tag1.nested1.nested2", true)
     }
 }
