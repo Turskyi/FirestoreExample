@@ -7,7 +7,7 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "ua.turskyi.firestoreexample"
         minSdkVersion 21
@@ -28,17 +28,18 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     /* design */
-    implementation 'com.google.android.material:material:1.2.0-alpha03'
+    implementation 'com.google.android.material:material:1.3.0-alpha01'
 
     /* CardView */
     implementation "androidx.cardview:cardview:1.0.0"
 
     // FirebaseUI for Cloud Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
