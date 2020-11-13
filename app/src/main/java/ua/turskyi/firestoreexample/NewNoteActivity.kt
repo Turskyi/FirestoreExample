@@ -10,8 +10,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_new_note.*
 
 class NewNoteActivity : AppCompatActivity() {
-    private var editTextTitle: EditText? = null
-    private var editTextDescription: EditText? = null
+    private lateinit  var editTextTitle: EditText
+    private lateinit var editTextDescription: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +42,8 @@ class NewNoteActivity : AppCompatActivity() {
     }
 
     private fun saveNote() {
-        val title = editTextTitle?.text.toString()
-        val description = editTextDescription?.text.toString()
+        val title = editTextTitle.text.toString()
+        val description = editTextDescription.text.toString()
         val priority = numberPickerPriority!!.value
         if (title.trim { it <= ' ' }.isEmpty() || description.trim { it <= ' ' }.isEmpty()) {
             Toast.makeText(this, "Please insert a title and description", Toast.LENGTH_SHORT).show()

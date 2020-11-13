@@ -17,7 +17,7 @@ import com.google.firebase.firestore.Query
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val db = FirebaseFirestore.getInstance()
     private val notebookRef = db.collection("Notebook")
-    private var adapter: NoteAdapter? = null
+    private lateinit var adapter: NoteAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
@@ -62,19 +62,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                adapter!!.deleteItem(viewHolder.adapterPosition)
+                adapter.deleteItem(viewHolder.adapterPosition)
             }
         }).attachToRecyclerView(recyclerView)
 
-        adapter!!.setOnItemClickListener(object :
+        adapter.setOnItemClickListener(object :
             NoteAdapter.OnItemClickListener {
             override fun onItemClick(documentSnapshot: DocumentSnapshot?, position: Int) {
-                val note =
-                    documentSnapshot!!.toObject(
-                        Note::class.java
-                    )
-                val id = documentSnapshot.id
-                val path = documentSnapshot.reference.path
+                documentSnapshot?.toObject(
+                    Note::class.java
+                )
+                val id = documentSnapshot?.id
+                documentSnapshot?.reference?.path
                 Toast.makeText(
                     this@MainActivity,
                     "Position: $position ID: $id", Toast.LENGTH_SHORT
@@ -85,11 +84,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onStart() {
         super.onStart()
-        adapter!!.startListening()
+        adapter.startListening()
     }
 
     override fun onStop() {
         super.onStop()
-        adapter!!.stopListening()
+        adapter.stopListening()
     }
 }
