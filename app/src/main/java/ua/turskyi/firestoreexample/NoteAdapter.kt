@@ -47,7 +47,7 @@ class NoteAdapter(options: FirestoreRecyclerOptions<Note?>) :
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION && listener != null) {
-                    listener!!.onItemClick(snapshots.getSnapshot(position), position)
+                    listener?.onItemClick(snapshots.getSnapshot(position), position)
                 }
             }
         }
